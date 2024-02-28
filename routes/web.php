@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 
 /*
@@ -18,7 +20,19 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/events', [UserController::class, 'viewEvents'])->name('events.index');
+Route::post('/events/{event}/reserve', [UserController::class, 'bookEvent'])->name('events.reserve')->middleware('auth');
 
+
+
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/events', [AdminController::class, 'index'])->name('admin.events.index');
+    Route::get('/events/create', [AdminController::class, 'create'])->name('admin.events.create');
+    Route::post('/events', [AdminController::class, 'store'])->name('admin.events.store');
+    Route::get('/events/{event}/edit', [AdminController::class, 'edit'])->name('admin.events.edit');
+    Route::put('/events/{event}', [AdminController::class, 'update'])->name('admin.events.update');
+    Route::delete('/events/{event}', [AdminController::class, 'destroy'])->name('admin.events.destroy');
+});
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
