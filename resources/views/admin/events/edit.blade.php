@@ -5,7 +5,7 @@
 @section('content')
     <h1>Edit Event</h1>
 
-    <form action="{{ route('admin.events.update', $event) }}" method="POST">
+    <form action="{{ route('admin.events.update', $event) }}" method="PUT">
         @csrf
         @method('PUT')
         <div class="form-group">

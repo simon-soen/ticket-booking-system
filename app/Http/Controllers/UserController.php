@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SuccessfulReservation;
 use Illuminate\Support\Facades\Auth;
+
+
 class UserController extends Controller
 {
     public function viewEvents()
@@ -32,15 +33,15 @@ class UserController extends Controller
         $userBookedTickets = $user->tickets()->where('event_id', $event->id)->count();
 
         
-        if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
-            return response()->json([
-                'message' => $availableTickets < $request->quantity
-                    ? 'No available tickets for this event'
-                    : 'You cannot book more than 5 tickets for this event.',
-            ], 400);
-        }
+        // if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
+        //     return response()->json([
+        //         'message' => $availableTickets < $request->quantity
+        //             ? 'No available tickets for this event'
+        //             : 'You cannot book more than 5 tickets for this event.',
+        //     ], 400);
+        // }
 
-        $totalPrice = $request->quantity * ($request->type === 'VIP' ? $event->ticket_price_vip : $event->ticket_price_regular);
+        $totalPrice = $request->quantity * ($request->type === 'VIP' ? $event->VIP_price: $event->Regular_price);
         
         
         $tickets = [];
@@ -59,8 +60,20 @@ class UserController extends Controller
             'total_price' => $totalPrice,
         ];
         // ...
-
-        Mail::to(auth()->user())->send(new SuccessfulReservation(auth()->user(), $ticketDetails));
-        return redirect()->route('events.reserve')->with('success', 'Tickets reserved successfully!');
+        try {
+            Mail::to(auth()->user())->send(new SuccessfulReservation(auth()->user(), $ticketDetails));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Email sending failed!');
+        }
+        return redirect()->route('bookedEvents')->with('success', 'Tickets reserved successfully!');
+    
     }
+    public function bookedEvents()
+    {
+        $user = Auth::user();
+        $tickets = $user->tickets()->with('event')->get();
+        return view('events.reserve', compact('tickets'));
+    }
+    
+    
 }

@@ -13,6 +13,8 @@
         <li>Date: {{ $ticketDetails['event_date'] }}</li>
         <li>Ticket Type: {{ $ticketDetails['ticket_type'] }}</li>
         <li>Quantity: {{ $ticketDetails['ticket_quantity'] }}</li>
+        <li>Total Price: {{$ticketDetails['totalPrice']}} </li>
+
     </ul>
     <p>Thank you for your reservation.</p>
 </body>
