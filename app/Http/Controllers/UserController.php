@@ -33,13 +33,16 @@ class UserController extends Controller
         $userBookedTickets = $user->tickets()->where('event_id', $event->id)->count();
 
         
-        // if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
-        //     return response()->json([
-        //         'message' => $availableTickets < $request->quantity
-        //             ? 'No available tickets for this event'
-        //             : 'You cannot book more than 5 tickets for this event.',
-        //     ], 400);
-        // }
+        if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
+            $message = $availableTickets < $request->quantity
+                ? 'No available tickets for this event'
+                : 'You cannot book more than 5 tickets for this event.';
+    
+            return redirect()->route('events.index')->with([
+                'error' => $message,
+                'eventId' => $event->id, 
+            ]);
+        }
 
         $totalPrice = $request->quantity * ($request->type === 'VIP' ? $event->VIP_price: $event->Regular_price);
         
@@ -52,6 +55,10 @@ class UserController extends Controller
                 
             ]);
         }
+        
+        $event->No_of_Booked_Tickets = $event->No_of_Booked_Tickets + $request->quantity;
+        $event->save();
+
         $ticketDetails = [
             'event_name' => $event->name,
             'event_date' => $event->date,
@@ -65,8 +72,8 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Email sending failed!');
         }
-        return redirect()->route('bookedEvents')->with('success', 'Tickets reserved successfully!');
-    
+        return redirect()->route('events.reserve')->with('success', 'Tickets reserved successfully!');
+     
     }
     public function bookedEvents()
     {

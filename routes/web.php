@@ -20,9 +20,11 @@ use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('/events', [UserController::class, 'viewEvents'])->name('events.index');
-Route::post('/events/{event}/reserve', [UserController::class, 'bookEvent'])->name('events.reserve')->middleware('auth');
-Route::get('/booked-events', [UserController::class, 'bookedEvents'])->name('bookedEvents');
+Route::post('/events/book/{event}', [UserController::class, 'bookEvent'])->name('bookEvent');
+#Route::get('/events/reserve', [UserController::class, 'bookedEvents'])->name('bookedEvents');
+Route::get('/events/reserve', [UserController::class, 'bookedEvents'])->name('events.reserve');
 
 
 Route::prefix('admin')->middleware('auth')->group(function () {
@@ -30,7 +32,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/events/create', [AdminController::class, 'create'])->name('admin.events.create');
     Route::post('/events', [AdminController::class, 'store'])->name('admin.events.store');
     Route::get('/events/{event}', [AdminController::class, 'show'])->name('admin.events.edit');
-    Route::put('/events/{event}', [AdminController::class, 'update'])->name('admin.events.update');
+    Route::put('/events/{event}', [AdminController::class, 'update'])->name('admin.events.edit');
     Route::delete('/events/{event}', [AdminController::class, 'destroy'])->name('admin.events.destroy');
 });
 Auth::routes();

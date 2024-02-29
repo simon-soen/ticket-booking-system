@@ -15,6 +15,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Date</th>
+                    <th>Number of Booked Tickets</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -23,6 +24,7 @@
                     <tr>
                         <td>{{ $event->name }}</td>
                         <td>{{ $event->date }}</td>
+                        <td>{{ $event->No_of_Booked_Tickets }}</td>
                         <td>
                             <a href="{{ route('admin.events.edit', $event) }}" class="btn btn-sm btn-primary">Edit</a>
                             <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="d-inline">
