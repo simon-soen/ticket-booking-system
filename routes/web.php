@@ -26,7 +26,7 @@ Route::post('/events/book/{event}', [UserController::class, 'bookEvent'])->name(
 Route::get('/events/reserve', [UserController::class, 'bookedEvents'])->name('events.reserve');
 
 Route::prefix('admin')->middleware('auth')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.events.index');
+    Route::get('/events', [AdminController::class, 'index'])->name('admin.events.index');
     Route::get('/events/create', [AdminController::class, 'create'])->name('admin.events.create');
     Route::post('/events', [AdminController::class, 'store'])->name('admin.events.store');
     Route::get('/events/{event}', [AdminController::class, 'show'])->name('admin.events.show');

@@ -63,3 +63,6 @@
     </div>
 </div>
 @endsection
+@section('navbar-right')
+    @include('layouts.nav')
+@endsection
