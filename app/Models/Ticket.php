@@ -15,7 +15,6 @@ class Ticket extends Model
         'user_id',
         'event_id',
         'type',
-        'image', // Optional, if you choose to include an image field
     ];
 
     public function event()

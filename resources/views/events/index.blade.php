@@ -18,7 +18,7 @@
                         <p class="card-text">Time: {{ $event->time }}</p>
                         <p class="card-text">Description: {{ $event->description }}</p>
 
-                        <!-- Booking Form -->
+                        
                         <form id="bookEventForm{{ $event->id }}" action="{{ route('bookEvent', $event) }}" method="POST">
                             @csrf
                             <div class="form-group">
@@ -62,11 +62,4 @@
     @include('layouts.nav')
 @endsection
 
-@section('scripts')
-    <script>
-        // Function to show booking success message
-        function showBookingSuccess() {
-            alert('Booking successful!');
-        }
-    </script>
-@endsection
+

@@ -20,7 +20,6 @@ class AdminController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
         $validatedData = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
@@ -31,10 +30,7 @@ class AdminController extends Controller
             'Regular_price' => 'required|numeric|min:0',
         ]);
 
-        // Create the event
         Event::create($validatedData);
-
-        // Redirect admin
         return redirect()->route('admin.events.index')->with('success', 'Event created successfully!');
     }
 
@@ -45,7 +41,6 @@ class AdminController extends Controller
 
     public function update(Request $request, Event $event)
     {
-        // Validate the request
         $validatedData = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
@@ -57,19 +52,15 @@ class AdminController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Update the event
         $event->update($validatedData);
 
-        // Redirect admin
         return redirect()->route('admin.events.index')->with('success', 'Event updated successfully!');
     }
 
     public function destroy(Event $event)
     {
-        // Delete the event
         $event->delete();
 
-        // Redirect admin
         return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully!');
     }
 }
