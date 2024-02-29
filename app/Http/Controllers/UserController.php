@@ -18,6 +18,9 @@ class UserController extends Controller
     public function bookEvent(Request $request, Event $event)
     {
         $this->middleware('auth');
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You need to be logged in to book tickets.');
+        }
 
         $request->validate([
             'type' => 'required|in:VIP,Regular',
@@ -66,12 +69,9 @@ class UserController extends Controller
             'ticket_quantity' => $request->quantity,
             'total_price' => $totalPrice,
         ];
-        // ...
-        try {
-            Mail::to(auth()->user())->send(new SuccessfulReservation(auth()->user(), $ticketDetails));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Email sending failed!');
-        }
+        
+        Mail::to(auth()->user())->send(new SuccessfulReservation(auth()->user(), $ticketDetails));
+       
         return redirect()->route('events.reserve')->with('success', 'Tickets reserved successfully!');
      
     }

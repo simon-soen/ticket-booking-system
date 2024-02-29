@@ -1,5 +1,3 @@
-<!-- resources/views/admin/events/index.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
@@ -26,7 +24,7 @@
                         <td>{{ $event->date }}</td>
                         <td>{{ $event->No_of_Booked_Tickets }}</td>
                         <td>
-                            <a href="{{ route('admin.events.edit', $event) }}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{{ route('admin.events.show', $event) }}" class="btn btn-sm btn-primary">Edit</a>
                             <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
@@ -38,4 +36,12 @@
             </tbody>
         </table>
     @endif
+@endsection
+{{-- @section('navbar-left')
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('events.index') }}">All Events</a>
+    </li>
+@endsection --}}
+@section('navbar-right')
+    @include('layouts.nav')
 @endsection
