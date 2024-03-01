@@ -77,6 +77,9 @@ class UserController extends Controller
     }
     public function bookedEvents()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You need to be logged in to check your tickets.');
+        }
         $user = Auth::user();
         $tickets = $user->tickets()->with('event')->get();
         return view('events.reserve', compact('tickets'));
