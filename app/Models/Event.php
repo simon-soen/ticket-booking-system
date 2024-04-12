@@ -17,6 +17,7 @@ class Event extends Model
         'max_attendees',
         'VIP_price',
         'Regular_price',
+        'No_of_Booked_Tickets',
     ];
 
     public function tickets()

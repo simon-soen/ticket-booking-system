@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('Regular_price', 10, 2)->nullable();
             $table->integer('max_attendees');
             $table->timestamps();
+            $table->integer('No_of_Booked_Tickets')->default(0); 
         });
     }
 

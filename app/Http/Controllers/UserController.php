@@ -16,65 +16,63 @@ class UserController extends Controller
         return view('events.index', compact('events'));
     }
     public function bookEvent(Request $request, Event $event)
-    {
-        $this->middleware('auth');
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'You need to be logged in to book tickets.');
-        }
-
-        $request->validate([
-            'type' => 'required|in:VIP,Regular',
-            'quantity' => 'required|numeric|min:1|max:5', 
-        ]);
-
-        
-
-        
-        $user = Auth::user();
-
-        $availableTickets = $event->max_attendees - $event->No_of_Booked_Tickets;
-        $userBookedTickets = $user->tickets()->where('event_id', $event->id)->count();
-
-        
-        if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
-            $message = $availableTickets < $request->quantity
-                ? 'No available tickets for this event'
-                : 'You cannot book more than 5 tickets for this event.';
-    
-            return redirect()->route('events.index')->with([
-                'error' => $message,
-                'eventId' => $event->id, 
-            ]);
-        }
-
-        $totalPrice = $request->quantity * ($request->type === 'VIP' ? $event->VIP_price: $event->Regular_price);
-        
-        
-        $tickets = [];
-        for ($i = 0; $i < $request->quantity; $i++) {
-            $tickets[] = auth()->user()->tickets()->create([
-                'event_id' => $event->id,
-                'type' => $request->type,
-                
-            ]);
-        }
-        
-        $event->No_of_Booked_Tickets = $event->No_of_Booked_Tickets + $request->quantity;
-        $event->save();
-
-        $ticketDetails = [
-            'event_name' => $event->name,
-            'event_date' => $event->date,
-            'ticket_type' => $request->type,
-            'ticket_quantity' => $request->quantity,
-            'total_price' => $totalPrice,
-        ];
-        
-        Mail::to(auth()->user())->send(new SuccessfulReservation(auth()->user(), $ticketDetails));
-       
-        return redirect()->route('events.reserve')->with('success', 'Tickets reserved successfully!');
-     
+{
+    // Check if user is authenticated
+    $user = Auth::user();
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'You need to be logged in to book tickets.');
     }
+
+    // Validate request data
+    $request->validate([
+        'type' => 'required|in:VIP,Regular',
+        'quantity' => 'required|numeric|min:1|max:5',
+    ]);
+
+    // Check available tickets and user's booked tickets
+    $availableTickets = $event->max_attendees - $event->No_of_Booked_Tickets;
+    $userBookedTickets = $user->tickets()->where('event_id', $event->id)->count();
+
+    if ($availableTickets < $request->quantity || $userBookedTickets + $request->quantity > 5) {
+        $message = $availableTickets < $request->quantity
+            ? 'No available tickets for this event'
+            : 'You cannot book more than 5 tickets for this event.';
+        
+        return redirect()->route('events.index')->with([
+            'error' => $message,
+            'eventId' => $event->id,
+        ]);
+    }
+
+    // Calculate total price based on ticket type and quantity
+    $totalPrice = $request->quantity * ($request->type === 'VIP' ? $event->VIP_price : $event->Regular_price);
+
+    // Create tickets for the user
+    $tickets = [];
+    for ($i = 0; $i < $request->quantity; $i++) {
+        $ticket = $user->tickets()->create([
+            'event_id' => $event->id,
+            'type' => $request->type,
+        ]);
+        $tickets[] = $ticket;
+    }
+
+    // Send reservation confirmation email to the user (optional)
+    $ticketDetails = [
+        'event_name' => $event->name,
+        'event_date' => $event->date,
+        'ticket_type' => $request->type,
+        'ticket_quantity' => $request->quantity,
+        'total_price' => $totalPrice,
+    ];
+    
+    // Assuming you have a mail notification class for reservation confirmation
+    Mail::to($user)->send(new SuccessfulReservation($user, $ticketDetails));
+
+    // Redirect with success message
+    return redirect()->route('events.reserve')->with('success', 'Tickets reserved successfully!');
+}
+
     public function bookedEvents()
     {
         if (!Auth::check()) {
